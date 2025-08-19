@@ -29,6 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Academic Year doctype with date validation and default year management
   - Fee Bill doctype with FIFO payment allocation and ledger integration
   - Student Attendance doctype with guardian notifications and justification workflow
+  - School Class doctype with capacity management and subject assignment
+  - Subject doctype with scoring configuration and level categorization
+  - Homework doctype with automated notifications and submission tracking
+  - Homework Submission doctype with late detection and grading workflow
+  - Grade doctype with percentage calculation and letter grade assignment
+  - Employee doctype with user account creation and role assignment
+  - Assessment doctype with scheduling and grading summary analytics
 - Document event hooks for validation and automated actions
 - Scheduled job system for daily, weekly, and monthly operations
 - Role-based permissions and portal access control
+- Comprehensive business rule validation across all DocTypes
+- Automated notification system for students, parents, and teachers
