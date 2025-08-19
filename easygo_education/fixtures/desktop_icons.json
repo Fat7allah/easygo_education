@@ -1,0 +1,74 @@
+[
+ {
+  "color": "blue",
+  "doctype": "Desktop Icon",
+  "icon": "octicon octicon-book",
+  "is_query_report": 0,
+  "label": "Student",
+  "link": "List/Student",
+  "module_name": "Scolarité",
+  "name": "Student",
+  "standard": 1,
+  "type": "link"
+ },
+ {
+  "color": "green",
+  "doctype": "Desktop Icon",
+  "icon": "octicon octicon-calendar",
+  "is_query_report": 0,
+  "label": "Student Attendance",
+  "link": "List/Student Attendance",
+  "module_name": "Vie Scolaire",
+  "name": "Student Attendance",
+  "standard": 1,
+  "type": "link"
+ },
+ {
+  "color": "orange",
+  "doctype": "Desktop Icon",
+  "icon": "octicon octicon-credit-card",
+  "is_query_report": 0,
+  "label": "Fee Bill",
+  "link": "List/Fee Bill",
+  "module_name": "Finances RH",
+  "name": "Fee Bill",
+  "standard": 1,
+  "type": "link"
+ },
+ {
+  "color": "purple",
+  "doctype": "Desktop Icon",
+  "icon": "octicon octicon-megaphone",
+  "is_query_report": 0,
+  "label": "School Communication",
+  "link": "List/School Communication",
+  "module_name": "Administration Comms",
+  "name": "School Communication",
+  "standard": 1,
+  "type": "link"
+ },
+ {
+  "color": "red",
+  "doctype": "Desktop Icon",
+  "icon": "octicon octicon-home",
+  "is_query_report": 0,
+  "label": "School Asset",
+  "link": "List/School Asset",
+  "module_name": "Gestion Etablissement",
+  "name": "School Asset",
+  "standard": 1,
+  "type": "link"
+ },
+ {
+  "color": "grey",
+  "doctype": "Desktop Icon",
+  "icon": "octicon octicon-gear",
+  "is_query_report": 0,
+  "label": "School Settings",
+  "link": "Form/School Settings",
+  "module_name": "Referentiels",
+  "name": "School Settings",
+  "standard": 1,
+  "type": "link"
+ }
+]
