@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include easygo_education *.css
+recursive-include easygo_education *.csv
+recursive-include easygo_education *.html
+recursive-include easygo_education *.ico
+recursive-include easygo_education *.js
+recursive-include easygo_education *.json
+recursive-include easygo_education *.md
+recursive-include easygo_education *.png
+recursive-include easygo_education *.py
+recursive-include easygo_education *.svg
+recursive-include easygo_education *.txt
+recursive-exclude easygo_education *.pyc
