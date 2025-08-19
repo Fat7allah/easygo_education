@@ -24,3 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSS and JavaScript foundations for portal functionality
 - Hooks configuration with document events and scheduled tasks
 - Bootstrap patch framework for demo data
+- Core DocTypes implementation with business rules:
+  - Student doctype with MASSAR validation and user account creation
+  - Academic Year doctype with date validation and default year management
+  - Fee Bill doctype with FIFO payment allocation and ledger integration
+  - Student Attendance doctype with guardian notifications and justification workflow
+- Document event hooks for validation and automated actions
+- Scheduled job system for daily, weekly, and monthly operations
+- Role-based permissions and portal access control
