@@ -1,0 +1,241 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:PC-{YYYY}-{#####}",
+ "creation": "2024-01-01 00:00:00.000000",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "student",
+  "student_name",
+  "guardian",
+  "column_break_4",
+  "consent_type",
+  "consent_title",
+  "request_date",
+  "section_break_8",
+  "description",
+  "consent_details",
+  "section_break_11",
+  "activity_date",
+  "activity_location",
+  "responsible_teacher",
+  "column_break_15",
+  "emergency_contact",
+  "medical_requirements",
+  "section_break_18",
+  "consent_given",
+  "consent_date",
+  "digital_signature",
+  "column_break_22",
+  "status",
+  "expiry_date",
+  "section_break_25",
+  "attachments",
+  "consent_form_template"
+ ],
+ "fields": [
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Student",
+   "options": "Student",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "student.title",
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "guardian",
+   "fieldtype": "Link",
+   "label": "Guardian",
+   "options": "Guardian",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "consent_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Consent Type",
+   "options": "Field Trip\nExtracurricular Activity\nMedical Treatment\nPhoto/Video Release\nTransportation\nSpecial Event\nResearch Participation\nOther",
+   "reqd": 1
+  },
+  {
+   "fieldname": "consent_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Consent Title",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "request_date",
+   "fieldtype": "Date",
+   "label": "Request Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break",
+   "label": "Consent Details"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "consent_details",
+   "fieldtype": "Table",
+   "label": "Consent Details",
+   "options": "Consent Detail"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break",
+   "label": "Activity Information"
+  },
+  {
+   "fieldname": "activity_date",
+   "fieldtype": "Date",
+   "label": "Activity Date"
+  },
+  {
+   "fieldname": "activity_location",
+   "fieldtype": "Data",
+   "label": "Activity Location"
+  },
+  {
+   "fieldname": "responsible_teacher",
+   "fieldtype": "Link",
+   "label": "Responsible Teacher",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "emergency_contact",
+   "fieldtype": "Data",
+   "label": "Emergency Contact"
+  },
+  {
+   "fieldname": "medical_requirements",
+   "fieldtype": "Small Text",
+   "label": "Medical Requirements"
+  },
+  {
+   "fieldname": "section_break_18",
+   "fieldtype": "Section Break",
+   "label": "Consent Status"
+  },
+  {
+   "default": "0",
+   "fieldname": "consent_given",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Consent Given"
+  },
+  {
+   "fieldname": "consent_date",
+   "fieldtype": "Datetime",
+   "label": "Consent Date"
+  },
+  {
+   "fieldname": "digital_signature",
+   "fieldtype": "Signature",
+   "label": "Digital Signature"
+  },
+  {
+   "fieldname": "column_break_22",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nApproved\nDeclined\nExpired\nWithdrawn"
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expiry Date"
+  },
+  {
+   "fieldname": "section_break_25",
+   "fieldtype": "Section Break",
+   "label": "Attachments"
+  },
+  {
+   "fieldname": "attachments",
+   "fieldtype": "Table",
+   "label": "Attachments",
+   "options": "Consent Attachment"
+  },
+  {
+   "fieldname": "consent_form_template",
+   "fieldtype": "Link",
+   "label": "Consent Form Template",
+   "options": "Document Template"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "EasyGo Education",
+ "name": "Parent Consent",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Education Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Teacher",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Guardian",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
