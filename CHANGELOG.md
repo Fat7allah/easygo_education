@@ -67,3 +67,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Education Manager Dashboard with enrollment trends and financial overview
   - Teacher Dashboard with class management and student performance tracking
   - Custom dashboard API methods for real-time metrics and analytics
+- Essential portal and communication DocTypes:
+  - Guardian doctype with portal access and student relationship management
+  - Message Thread and Message doctypes for portal communication system
+  - Student Transfer doctype with approval workflow and status tracking
+  - Attendance Justification doctype for parent/student portal submissions
+  - Supporting child tables for messaging and document attachments
