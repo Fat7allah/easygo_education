@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Critical missing DocTypes for comprehensive education management:
+  - Academic Term doctype with term dates, grading periods, and progress tracking
+  - Program doctype with curriculum details, duration, and fee structure integration
+  - Grading Scale doctype with score intervals, grade calculation, and performance metrics
+  - Fee Structure doctype with component breakdown, payment schedules, and discount management
+  - Payment Entry doctype with verification workflow, bank details, and fee bill integration
+  - Student Academic History doctype with performance tracking, transcript generation, and promotion status
+  - Parent Consent doctype with digital signatures, activity approvals, and expiry management
+  - Notification Template doctype with multi-channel support, variable substitution, and approval workflow
+  - Health Record doctype with medical conditions, vaccination tracking, and activity clearances
+  - Disciplinary Action doctype with incident reporting, parent notifications, and behavior improvement plans
+  - Room doctype with facility management, booking system, and maintenance tracking
+
 ## [0.1.0] - 2025-08-19
 
 ### Added
