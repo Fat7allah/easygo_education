@@ -60,3 +60,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Course Schedule doctype with timetable management and conflict detection
   - Exam doctype with scheduling, notifications, and results summary
   - Communication Log doctype for tracking all system communications
+- Comprehensive script reports and dashboards for analytics:
+  - Student Performance Report with grade distribution and performance metrics
+  - Attendance Summary Report with attendance rates and status tracking
+  - Fee Collection Report with payment analytics and collection rates
+  - Education Manager Dashboard with enrollment trends and financial overview
+  - Teacher Dashboard with class management and student performance tracking
+  - Custom dashboard API methods for real-time metrics and analytics
