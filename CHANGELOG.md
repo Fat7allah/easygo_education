@@ -56,3 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fee invoice with payment instructions and multiple payment methods
 - Bilingual interface support with language toggle functionality
 - RTL (Right-to-Left) layout support for Arabic content
+- Additional essential DocTypes for comprehensive education management:
+  - Course Schedule doctype with timetable management and conflict detection
+  - Exam doctype with scheduling, notifications, and results summary
+  - Communication Log doctype for tracking all system communications
