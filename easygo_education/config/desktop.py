@@ -1,11 +1,85 @@
-"""Desktop configuration for EasyGo Education modules."""
+"""Desktop configuration for EasyGo Education."""
 
 from frappe import _
 
 
 def get_data():
-    """Return desktop icons configuration."""
+    """Get desktop configuration data."""
     return [
+        # Education Management
+        {
+            "module_name": "EasyGo Education",
+            "category": "Modules",
+            "label": _("Education"),
+            "color": "#4CAF50",
+            "icon": "fa fa-graduation-cap",
+            "type": "module",
+            "description": _("Comprehensive school management system")
+        },
+        
+        # Quick Access Cards
+        {
+            "module_name": "EasyGo Education",
+            "category": "Places",
+            "label": _("Student Portal"),
+            "color": "#2196F3",
+            "icon": "fa fa-user-graduate",
+            "type": "page",
+            "link": "student-portal",
+            "description": _("Student dashboard and portal")
+        },
+        {
+            "module_name": "EasyGo Education",
+            "category": "Places",
+            "label": _("Teacher Portal"),
+            "color": "#FF9800",
+            "icon": "fa fa-chalkboard-teacher",
+            "type": "page",
+            "link": "teacher-portal",
+            "description": _("Teacher dashboard and tools")
+        },
+        {
+            "module_name": "EasyGo Education",
+            "category": "Places",
+            "label": _("Parent Portal"),
+            "color": "#9C27B0",
+            "icon": "fa fa-users",
+            "type": "page",
+            "link": "parent-portal",
+            "description": _("Parent dashboard and communication")
+        },
+        
+        # Reports
+        {
+            "module_name": "EasyGo Education",
+            "category": "Reports",
+            "label": _("Class Performance"),
+            "color": "#607D8B",
+            "icon": "fa fa-chart-line",
+            "type": "report",
+            "link": "query-report/Class Performance Report",
+            "description": _("Student performance analytics")
+        },
+        {
+            "module_name": "EasyGo Education",
+            "category": "Reports",
+            "label": _("Fee Collection"),
+            "color": "#4CAF50",
+            "icon": "fa fa-money-bill",
+            "type": "report",
+            "link": "query-report/Fee Collection Summary",
+            "description": _("Fee collection and outstanding reports")
+        },
+        {
+            "module_name": "EasyGo Education",
+            "category": "Reports",
+            "label": _("Attendance Analytics"),
+            "color": "#FF5722",
+            "icon": "fa fa-calendar-check",
+            "type": "report",
+            "link": "query-report/Attendance Analytics",
+            "description": _("Attendance trends and analysis")
+        },
         {
             "module_name": "Scolarité",
             "category": "Modules",
