@@ -1,337 +1,238 @@
-"""Parent Consent DocType."""
+"""Parent Consent doctype controller."""
 
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import getdate, now_datetime, add_days
+from frappe.utils import now, getdate, add_days
 
 
 class ParentConsent(Document):
-    """Parent Consent management."""
+    """Parent Consent doctype controller."""
     
     def validate(self):
         """Validate parent consent data."""
         self.validate_dates()
-        self.validate_guardian()
+        self.validate_consent_requirements()
         self.set_defaults()
     
     def validate_dates(self):
-        """Validate consent dates."""
-        if self.activity_date and self.request_date:
-            if getdate(self.activity_date) < getdate(self.request_date):
-                frappe.throw(_("Activity date cannot be before request date"))
+        """Validate consent and expiry dates."""
+        if self.consent_date and getdate(self.consent_date) > getdate():
+            frappe.throw(_("Consent date cannot be in the future"))
         
-        if self.expiry_date and self.request_date:
-            if getdate(self.expiry_date) <= getdate(self.request_date):
-                frappe.throw(_("Expiry date must be after request date"))
+        if self.expiry_date and self.consent_date:
+            if getdate(self.expiry_date) <= getdate(self.consent_date):
+                frappe.throw(_("Expiry date must be after consent date"))
     
-    def validate_guardian(self):
-        """Validate guardian relationship with student."""
+    def validate_consent_requirements(self):
+        """Validate consent requirements based on type."""
+        if self.consent_given and not self.signature_date:
+            frappe.throw(_("Signature date is required when consent is given"))
+        
+        # Check if guardian is authorized for this student
         if self.student and self.guardian:
-            guardian_students = frappe.db.get_all("Student Guardian",
-                filters={"guardian": self.guardian},
-                fields=["parent"]
-            )
+            guardian_exists = frappe.db.exists("Student Guardian", {
+                "student": self.student,
+                "guardian": self.guardian
+            })
             
-            student_list = [g.parent for g in guardian_students]
-            
-            if self.student not in student_list:
-                frappe.throw(_("Selected guardian is not associated with this student"))
+            if not guardian_exists:
+                frappe.throw(_("Selected guardian is not authorized for this student"))
     
     def set_defaults(self):
         """Set default values."""
-        if not self.status:
-            self.status = "Pending"
+        if not self.created_by:
+            self.created_by = frappe.session.user
         
-        if not self.expiry_date and self.activity_date:
-            # Set expiry date to 7 days after activity date
-            self.expiry_date = add_days(self.activity_date, 7)
+        if not self.creation_date:
+            self.creation_date = now()
+        
+        # Fetch student and guardian names
+        if self.student and not self.student_name:
+            self.student_name = frappe.db.get_value("Student", self.student, "student_name")
+        
+        if self.guardian and not self.guardian_name:
+            guardian_doc = frappe.get_doc("Guardian", self.guardian)
+            self.guardian_name = f"{guardian_doc.first_name} {guardian_doc.last_name}"
+        
+        # Set default expiry date (1 year from consent date)
+        if self.consent_date and not self.expiry_date:
+            self.expiry_date = add_days(self.consent_date, 365)
+    
+    def before_save(self):
+        """Actions before saving."""
+        self.update_status()
+    
+    def update_status(self):
+        """Update consent status based on conditions."""
+        if self.consent_given and self.signature_date:
+            if self.status == "Pending":
+                self.status = "Approved"
+        
+        # Check if consent has expired
+        if self.expiry_date and getdate(self.expiry_date) < getdate():
+            self.status = "Expired"
     
     def on_update(self):
         """Actions after update."""
-        if self.consent_given and not self.consent_date:
-            self.consent_date = now_datetime()
-            self.status = "Approved"
-        
-        self.check_expiry()
+        if self.status == "Approved" and self.consent_given:
+            self.send_consent_confirmation()
     
-    def check_expiry(self):
-        """Check if consent has expired."""
-        if self.expiry_date and getdate() > getdate(self.expiry_date):
-            if self.status not in ["Expired", "Declined", "Withdrawn"]:
-                self.status = "Expired"
-    
-    @frappe.whitelist()
-    def send_consent_request(self):
-        """Send consent request to guardian."""
-        if self.status != "Pending":
-            frappe.throw(_("Only pending consent requests can be sent"))
-        
-        guardian_doc = frappe.get_doc("Guardian", self.guardian)
-        
-        if guardian_doc.email_address:
-            # Send email with consent form
-            self.send_consent_email()
-        
-        if guardian_doc.mobile_number:
-            # Send SMS notification
-            self.send_consent_sms()
-        
-        frappe.msgprint(_("Consent request sent successfully"))
-        return self
-    
-    def send_consent_email(self):
-        """Send consent request email."""
-        guardian_doc = frappe.get_doc("Guardian", self.guardian)
-        
-        subject = _("Consent Request: {0}").format(self.consent_title)
-        message = self.get_consent_email_message()
-        
-        # Generate consent form URL
-        consent_url = self.get_consent_form_url()
-        
-        frappe.sendmail(
-            recipients=[guardian_doc.email_address],
-            subject=subject,
-            message=message,
-            reference_doctype=self.doctype,
-            reference_name=self.name,
-            attachments=self.get_consent_attachments()
-        )
-    
-    def send_consent_sms(self):
-        """Send consent request SMS."""
-        guardian_doc = frappe.get_doc("Guardian", self.guardian)
-        
-        message = _("Consent required for {0}. Please check your email or visit the parent portal. School: {1}").format(
-            self.consent_title,
-            frappe.db.get_single_value("School Settings", "school_name")
-        )
-        
-        # Use SMS adapter
-        from easygo_education.finances_rh.adapters.sms import send_sms
-        send_sms(guardian_doc.mobile_number, message)
-    
-    @frappe.whitelist()
-    def approve_consent(self, digital_signature=None):
-        """Approve consent (guardian action)."""
-        if self.status != "Pending":
-            frappe.throw(_("Only pending consent requests can be approved"))
-        
-        self.consent_given = 1
-        self.consent_date = now_datetime()
-        self.status = "Approved"
-        
-        if digital_signature:
-            self.digital_signature = digital_signature
-        
-        self.save()
-        
-        # Notify school
-        self.notify_school("approved")
-        
-        frappe.msgprint(_("Consent approved successfully"))
-        return self
-    
-    @frappe.whitelist()
-    def decline_consent(self, reason=None):
-        """Decline consent (guardian action)."""
-        if self.status != "Pending":
-            frappe.throw(_("Only pending consent requests can be declined"))
-        
-        self.consent_given = 0
-        self.status = "Declined"
-        
-        if reason:
-            self.description = (self.description or "") + f"\n\nDeclined Reason: {reason}"
-        
-        self.save()
-        
-        # Notify school
-        self.notify_school("declined", reason)
-        
-        frappe.msgprint(_("Consent declined"))
-        return self
-    
-    @frappe.whitelist()
-    def withdraw_consent(self, reason=None):
-        """Withdraw previously given consent."""
-        if self.status != "Approved":
-            frappe.throw(_("Only approved consent can be withdrawn"))
-        
-        self.consent_given = 0
-        self.status = "Withdrawn"
-        
-        if reason:
-            self.description = (self.description or "") + f"\n\nWithdrawal Reason: {reason}"
-        
-        self.save()
-        
-        # Notify school
-        self.notify_school("withdrawn", reason)
-        
-        frappe.msgprint(_("Consent withdrawn"))
-        return self
-    
-    def notify_school(self, action, reason=None):
-        """Notify school about consent status change."""
-        if self.responsible_teacher:
-            subject = _("Consent {0}: {1}").format(action.title(), self.consent_title)
-            message = self.get_school_notification_message(action, reason)
+    def send_consent_confirmation(self):
+        """Send consent confirmation to relevant parties."""
+        try:
+            # Get guardian email
+            guardian_email = frappe.db.get_value("Guardian", self.guardian, "email_address")
             
-            frappe.sendmail(
-                recipients=[self.responsible_teacher],
-                subject=subject,
-                message=message,
-                reference_doctype=self.doctype,
-                reference_name=self.name
+            recipients = []
+            if guardian_email:
+                recipients.append(guardian_email)
+            
+            # Get school admin emails
+            admin_emails = frappe.get_list("User",
+                filters={"role_profile_name": ["in", ["Education Manager", "Administrator"]]},
+                fields=["email"]
             )
+            
+            for admin in admin_emails:
+                if admin.email:
+                    recipients.append(admin.email)
+            
+            if recipients:
+                frappe.sendmail(
+                    recipients=recipients,
+                    subject=_("Consent Confirmation - {0}").format(self.activity_event or self.consent_type),
+                    message=_("Consent has been provided for {0}.\n\nDetails:\nStudent: {1}\nGuardian: {2}\nActivity: {3}\nConsent Type: {4}\nDate: {5}").format(
+                        self.activity_event or self.consent_type,
+                        self.student_name,
+                        self.guardian_name,
+                        self.activity_event or "N/A",
+                        self.consent_type,
+                        self.consent_date
+                    ),
+                    reference_doctype=self.doctype,
+                    reference_name=self.name
+                )
         
-        # Also notify education manager
-        education_manager = frappe.db.get_single_value("School Settings", "education_manager")
-        if education_manager and education_manager != self.responsible_teacher:
-            frappe.sendmail(
-                recipients=[education_manager],
-                subject=_("Consent Update: {0}").format(self.consent_title),
-                message=self.get_school_notification_message(action, reason),
-                reference_doctype=self.doctype,
-                reference_name=self.name
-            )
+        except Exception as e:
+            frappe.log_error(f"Failed to send consent confirmation: {str(e)}")
     
-    def get_consent_email_message(self):
-        """Get consent request email message."""
-        return _("""
-        Dear Parent/Guardian,
+    @frappe.whitelist()
+    def revoke_consent(self, reason=None):
+        """Revoke the consent."""
+        if self.status == "Revoked":
+            frappe.throw(_("Consent is already revoked"))
         
-        We are requesting your consent for the following activity involving your child:
-        
-        Student: {student_name}
-        Activity: {consent_title}
-        Type: {consent_type}
-        Date: {activity_date}
-        Location: {activity_location}
-        
-        Description:
-        {description}
-        
-        Responsible Teacher: {responsible_teacher}
-        Emergency Contact: {emergency_contact}
-        
-        Please review the details and provide your consent by clicking the link below:
-        {consent_url}
-        
-        If you have any questions, please contact the school.
-        
-        Thank you,
-        {school_name}
-        """).format(
-            student_name=self.student_name,
-            consent_title=self.consent_title,
-            consent_type=self.consent_type,
-            activity_date=self.activity_date or "TBD",
-            activity_location=self.activity_location or "TBD",
-            description=self.description,
-            responsible_teacher=self.responsible_teacher or "School Staff",
-            emergency_contact=self.emergency_contact or "School Office",
-            consent_url=self.get_consent_form_url(),
-            school_name=frappe.db.get_single_value("School Settings", "school_name")
-        )
-    
-    def get_school_notification_message(self, action, reason=None):
-        """Get school notification message."""
-        message = _("""
-        Consent Status Update
-        
-        Student: {student_name}
-        Guardian: {guardian}
-        Activity: {consent_title}
-        Status: {status}
-        Action Date: {consent_date}
-        
-        """).format(
-            student_name=self.student_name,
-            guardian=self.guardian,
-            consent_title=self.consent_title,
-            status=action.title(),
-            consent_date=self.consent_date
-        )
+        self.status = "Revoked"
+        self.consent_given = 0
         
         if reason:
-            message += f"Reason: {reason}\n\n"
+            self.remarks = (self.remarks or "") + f"\nRevoked: {reason} (Date: {now()})"
         
-        if action == "approved":
-            message += _("The parent has given consent for this activity.")
-        elif action == "declined":
-            message += _("The parent has declined consent for this activity.")
-        elif action == "withdrawn":
-            message += _("The parent has withdrawn their previously given consent.")
+        self.save()
+        self.send_revocation_notice()
         
-        return message
+        return True
     
-    def get_consent_form_url(self):
-        """Get consent form URL for parent portal."""
-        site_url = frappe.utils.get_url()
-        return f"{site_url}/app/parent-consent/{self.name}"
-    
-    def get_consent_attachments(self):
-        """Get consent form attachments."""
-        attachments = []
+    def send_revocation_notice(self):
+        """Send consent revocation notice."""
+        try:
+            # Get relevant parties
+            recipients = []
+            
+            # Guardian email
+            guardian_email = frappe.db.get_value("Guardian", self.guardian, "email_address")
+            if guardian_email:
+                recipients.append(guardian_email)
+            
+            # School admin emails
+            admin_emails = frappe.get_list("User",
+                filters={"role_profile_name": ["in", ["Education Manager", "Teacher"]]},
+                fields=["email"]
+            )
+            
+            for admin in admin_emails:
+                if admin.email:
+                    recipients.append(admin.email)
+            
+            if recipients:
+                frappe.sendmail(
+                    recipients=recipients,
+                    subject=_("Consent Revoked - {0}").format(self.activity_event or self.consent_type),
+                    message=_("Consent has been revoked for {0}.\n\nDetails:\nStudent: {1}\nGuardian: {2}\nActivity: {3}\nRevocation Date: {4}").format(
+                        self.activity_event or self.consent_type,
+                        self.student_name,
+                        self.guardian_name,
+                        self.activity_event or "N/A",
+                        now()
+                    ),
+                    reference_doctype=self.doctype,
+                    reference_name=self.name
+                )
         
-        if self.consent_form_template:
-            template_doc = frappe.get_doc("Document Template", self.consent_form_template)
-            if template_doc.template_file:
-                attachments.append({
-                    "fname": f"Consent_Form_{self.name}.pdf",
-                    "fcontent": template_doc.template_file
-                })
-        
-        # Add other attachments
-        for attachment in self.attachments:
-            if attachment.file_url:
-                attachments.append({
-                    "fname": attachment.file_name,
-                    "fcontent": frappe.get_doc("File", {"file_url": attachment.file_url}).get_content()
-                })
-        
-        return attachments
-    
-    @frappe.whitelist()
-    def generate_consent_report(self):
-        """Generate consent status report."""
-        return {
-            "consent_id": self.name,
-            "student": self.student_name,
-            "guardian": self.guardian,
-            "activity": self.consent_title,
-            "type": self.consent_type,
-            "request_date": self.request_date,
-            "activity_date": self.activity_date,
-            "status": self.status,
-            "consent_given": self.consent_given,
-            "consent_date": self.consent_date,
-            "expiry_date": self.expiry_date,
-            "responsible_teacher": self.responsible_teacher
-        }
+        except Exception as e:
+            frappe.log_error(f"Failed to send revocation notice: {str(e)}")
     
     @frappe.whitelist()
-    def get_related_consents(self):
-        """Get related consent requests for the same student."""
-        return frappe.get_all("Parent Consent",
-            filters={
-                "student": self.student,
-                "name": ["!=", self.name]
-            },
-            fields=["name", "consent_title", "consent_type", "status", "request_date"],
-            order_by="request_date desc",
-            limit=10
+    def get_consent_history(self):
+        """Get consent history for this student."""
+        consents = frappe.get_list("Parent Consent",
+            filters={"student": self.student},
+            fields=[
+                "name", "consent_type", "activity_event", "consent_date",
+                "expiry_date", "status", "guardian_name"
+            ],
+            order_by="consent_date desc"
         )
+        
+        return consents
     
-    def get_consent_summary(self):
-        """Get consent summary for dashboard."""
-        return {
-            "total_requests": frappe.db.count("Parent Consent"),
-            "pending_requests": frappe.db.count("Parent Consent", {"status": "Pending"}),
-            "approved_requests": frappe.db.count("Parent Consent", {"status": "Approved"}),
-            "declined_requests": frappe.db.count("Parent Consent", {"status": "Declined"}),
-            "expired_requests": frappe.db.count("Parent Consent", {"status": "Expired"})
+    @frappe.whitelist()
+    def check_consent_validity(self):
+        """Check if consent is still valid."""
+        if self.status != "Approved":
+            return {"valid": False, "reason": f"Consent status is {self.status}"}
+        
+        if not self.consent_given:
+            return {"valid": False, "reason": "Consent not given"}
+        
+        if self.expiry_date and getdate(self.expiry_date) < getdate():
+            return {"valid": False, "reason": "Consent has expired"}
+        
+        return {"valid": True, "reason": "Consent is valid"}
+    
+    @frappe.whitelist()
+    def generate_consent_form(self):
+        """Generate consent form data for printing."""
+        form_data = {
+            "consent_info": {
+                "reference": self.name,
+                "student_name": self.student_name,
+                "guardian_name": self.guardian_name,
+                "consent_type": self.consent_type,
+                "activity_event": self.activity_event,
+                "consent_date": self.consent_date,
+                "expiry_date": self.expiry_date
+            },
+            "activity_details": {
+                "description": self.activity_description,
+                "risks": self.risks_involved,
+                "instructions": self.special_instructions,
+                "emergency_contact": self.emergency_contact,
+                "conditions": self.consent_conditions
+            },
+            "medical_info": {
+                "conditions": self.medical_conditions,
+                "medications": self.medications,
+                "allergies": self.allergies,
+                "dietary_restrictions": self.dietary_restrictions
+            },
+            "approval": {
+                "consent_given": self.consent_given,
+                "signature_date": self.signature_date,
+                "digital_signature": self.digital_signature,
+                "witness": self.witness_name
+            }
         }
+        
+        return form_data

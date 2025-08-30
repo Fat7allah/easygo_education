@@ -1,0 +1,8 @@
+{
+  "js/easygo_education.min.js": [
+    "public/js/easygo_education.js"
+  ],
+  "css/easygo_education.min.css": [
+    "public/css/easygo_education.css"
+  ]
+}

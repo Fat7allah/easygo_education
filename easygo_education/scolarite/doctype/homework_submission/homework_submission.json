@@ -1,38 +1,38 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:HWS-{YYYY}-{#####}",
+ "autoname": "naming_series:",
  "creation": "2024-01-01 00:00:00.000000",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "homework",
   "student",
-  "student_name",
   "column_break_4",
   "submission_date",
-  "submission_time",
   "status",
-  "section_break_8",
-  "submission_text",
-  "attachments",
-  "section_break_11",
+  "submission_details",
+  "notes",
+  "attachment",
+  "column_break_9",
+  "grading_section",
   "grade",
   "max_grade",
-  "percentage",
-  "column_break_15",
   "feedback",
   "graded_by",
-  "graded_date",
-  "section_break_19",
-  "is_late",
-  "late_reason",
-  "extension_granted",
-  "extension_date"
+  "graded_on"
  ],
  "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "HWS-.YYYY.-.MM.-.#####",
+   "reqd": 1
+  },
   {
    "fieldname": "homework",
    "fieldtype": "Link",
@@ -50,58 +50,44 @@
    "reqd": 1
   },
   {
-   "fetch_from": "student.title",
-   "fieldname": "student_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Student Name",
-   "read_only": 1
-  },
-  {
    "fieldname": "column_break_4",
    "fieldtype": "Column Break"
   },
   {
-   "default": "Today",
    "fieldname": "submission_date",
-   "fieldtype": "Date",
+   "fieldtype": "Datetime",
    "in_list_view": 1,
    "label": "Submission Date",
    "reqd": 1
   },
   {
-   "default": "Now",
-   "fieldname": "submission_time",
-   "fieldtype": "Time",
-   "label": "Submission Time"
-  },
-  {
-   "default": "Submitted",
    "fieldname": "status",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Status",
-   "options": "Draft\nSubmitted\nGraded\nReturned\nResubmitted",
-   "reqd": 1
+   "options": "Submitted\nGraded\nLate\nResubmitted",
+   "default": "Submitted"
   },
   {
-   "fieldname": "section_break_8",
+   "fieldname": "submission_details",
    "fieldtype": "Section Break",
-   "label": "Submission Content"
+   "label": "Submission Details"
   },
   {
-   "fieldname": "submission_text",
+   "fieldname": "notes",
    "fieldtype": "Text Editor",
-   "label": "Submission Text"
+   "label": "Student Notes"
   },
   {
-   "fieldname": "attachments",
-   "fieldtype": "Table",
-   "label": "Attachments",
-   "options": "Homework Attachment"
+   "fieldname": "attachment",
+   "fieldtype": "Attach",
+   "label": "Submission File"
   },
   {
-   "fieldname": "section_break_11",
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "grading_section",
    "fieldtype": "Section Break",
    "label": "Grading"
   },
@@ -109,23 +95,13 @@
    "fieldname": "grade",
    "fieldtype": "Float",
    "label": "Grade",
-   "precision": 2
+   "precision": "2"
   },
   {
    "fieldname": "max_grade",
    "fieldtype": "Float",
    "label": "Max Grade",
-   "precision": 2
-  },
-  {
-   "fieldname": "percentage",
-   "fieldtype": "Percent",
-   "label": "Percentage",
    "read_only": 1
-  },
-  {
-   "fieldname": "column_break_15",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "feedback",
@@ -136,52 +112,36 @@
    "fieldname": "graded_by",
    "fieldtype": "Link",
    "label": "Graded By",
-   "options": "User"
+   "options": "User",
+   "read_only": 1
   },
   {
-   "fieldname": "graded_date",
-   "fieldtype": "Date",
-   "label": "Graded Date"
-  },
-  {
-   "fieldname": "section_break_19",
-   "fieldtype": "Section Break",
-   "label": "Late Submission"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_late",
-   "fieldtype": "Check",
-   "label": "Is Late Submission"
-  },
-  {
-   "depends_on": "is_late",
-   "fieldname": "late_reason",
-   "fieldtype": "Small Text",
-   "label": "Late Reason"
-  },
-  {
-   "default": "0",
-   "fieldname": "extension_granted",
-   "fieldtype": "Check",
-   "label": "Extension Granted"
-  },
-  {
-   "depends_on": "extension_granted",
-   "fieldname": "extension_date",
-   "fieldtype": "Date",
-   "label": "Extension Date"
+   "fieldname": "graded_on",
+   "fieldtype": "Datetime",
+   "label": "Graded On",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
  "modified": "2024-01-01 00:00:00.000000",
  "modified_by": "Administrator",
- "module": "EasyGo Education",
+ "module": "Scolarité",
  "name": "Homework Submission",
- "naming_rule": "Expression",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Student",
+   "share": 1,
+   "write": 1
+  },
   {
    "create": 1,
    "delete": 1,
@@ -196,6 +156,7 @@
   },
   {
    "create": 1,
+   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -206,12 +167,11 @@
    "write": 1
   },
   {
-   "create": 1,
    "read": 1,
-   "role": "Student",
-   "write": 1
+   "role": "Parent"
   }
  ],
+ "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

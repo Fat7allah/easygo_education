@@ -1,1 +1,1 @@
-# Homework Submission
+# Homework Submission doctype module
