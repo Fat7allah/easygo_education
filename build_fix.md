@@ -3,49 +3,76 @@
 ## Problem
 The error `TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string. Received undefined` occurs during `bench get-app` when Frappe's esbuild system cannot resolve app paths.
 
-## Solution Options
+## Root Cause Analysis
+After analyzing ERPNext's structure, the issue is caused by:
+1. **Incorrect build configuration files** - ERPNext doesn't use `build.json` in public folder
+2. **Path resolution issues** in Frappe's esbuild system
+3. **App structure mismatch** with Frappe's expectations
 
-### Option 1: Skip Assets During Installation (Recommended)
+## Fixed App Structure (Now Matches ERPNext)
+✅ **Corrected Files:**
+- `package.json` - Simple structure like ERPNext (moved to root)
+- Removed `public/build.json` - Not used by ERPNext
+- Removed `public/js/index.js` - Unnecessary entry point
+- Removed `.frapperc.js` - Not needed
+- Reset `hooks.py` - Commented out asset includes
+
+## Solution Methods (Try in Order)
+
+### Method 1: Manual Installation (Recommended)
 ```bash
-# Install the app without building assets
-bench get-app --skip-assets easygo_education
-
-# Then build assets manually after installation
-bench build --app easygo_education
-```
-
-### Option 2: Use Alternative Installation Method
-```bash
-# Clone the app manually to the apps directory
+# Navigate to bench apps directory
 cd /home/frappe/frappe-bench/apps
+
+# Clone your app directly
 git clone [your-repo-url] easygo_education
 
 # Add to apps.txt
 echo "easygo_education" >> /home/frappe/frappe-bench/sites/apps.txt
 
-# Install without assets
-bench --site [your-site] install-app easygo_education --skip-assets
+# Install the app to a site
+bench --site [your-site] install-app easygo_education
 
-# Build assets separately
+# Build assets if needed
 bench build --app easygo_education
 ```
 
-### Option 3: If Still Failing - Manual Asset Copy
+### Method 2: Use Local Path Installation
 ```bash
-# Copy assets to the sites directory manually
-mkdir -p /home/frappe/frappe-bench/sites/assets/easygo_education
-cp -r /home/frappe/frappe-bench/apps/easygo_education/easygo_education/public/* /home/frappe/frappe-bench/sites/assets/easygo_education/
+# Install from local path
+bench get-app /path/to/your/easygo_education
+
+# Or if you're in the app directory
+bench get-app .
 ```
 
-## Files Created to Fix Build Configuration
-1. `package.json` - App build configuration
-2. `public/build.json` - Asset mapping configuration  
-3. `public/js/index.js` - Entry point for module system
-4. `.frapperc.js` - Frappe configuration
-5. Updated `hooks.py` - Asset inclusion paths
+### Method 3: Alternative Build Approach
+```bash
+# Try building without the problematic app first
+bench build
 
-## Root Cause
-This error typically occurs due to:
-- Missing build configuration files
-- Path resolution issues in Frappe's esbuild system
-- Symlink handling problems in newer Frappe versions
+# Then specifically build your app
+bench build --app easygo_education
+```
+
+### Method 4: Skip Build During Installation
+```bash
+# Some versions support this flag
+bench get-app [repo-url] --no-deps
+
+# Or try installing to site without building
+bench --site [site] install-app easygo_education --force
+```
+
+## If All Methods Fail
+The issue might be with your Frappe/Bench version. Try:
+```bash
+# Update bench and frappe
+bench update --reset
+
+# Or check Frappe version compatibility
+bench version
+```
+
+## App Structure Now Matches ERPNext Standards
+Your app structure has been cleaned up to match ERPNext's minimal approach, which should resolve the build path resolution issues.

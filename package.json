@@ -1,0 +1,13 @@
+{
+  "name": "easygo_education",
+  "description": "Comprehensive educational institution management system for Morocco",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/easygo_education.git"
+  },
+  "homepage": "https://github.com/yourusername/easygo_education",
+  "author": "EasyGo Education Team",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}
