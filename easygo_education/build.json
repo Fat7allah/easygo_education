@@ -1,0 +1,12 @@
+{
+    "app": "easygo_education",
+    "assets": {
+      "easygo_education.bundle.css": [
+        "public/css/easygo_education.css"
+      ],
+      "easygo_education.bundle.js": [
+        "public/js/easygo_education.js"
+      ]
+    }
+  }
+  
