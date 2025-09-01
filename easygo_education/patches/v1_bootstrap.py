@@ -7,24 +7,25 @@ from frappe.utils import nowdate, add_days, add_months, getdate
 
 def execute():
     """Execute bootstrap patch - creates initial demo data."""
-    if frappe.db.exists("Academic Year", "2024-2025"):
+    # Check if patch already executed using a different marker
+    if frappe.db.exists("School Settings", "School Settings"):
         # Patch already executed
         return
     
     print("Executing EasyGo Education bootstrap patch...")
     
     try:
-        # Create demo data in order
+        # Create demo data in order (skip Academic Year dependent functions)
         create_school_settings()
-        create_academic_years()
+        # create_academic_years()  # Disabled - Academic Year moved to Education app in v15
         create_programs_and_subjects()
-        create_fee_structures()
+        # create_fee_structures()  # Disabled - depends on Academic Year
         create_salary_structures()
         create_demo_employees()
-        create_demo_classes()
-        create_demo_students()
-        create_sample_attendance()
-        create_sample_fees()
+        # create_demo_classes()  # Disabled - depends on Academic Year
+        # create_demo_students()  # Disabled - depends on Academic Year
+        # create_sample_attendance()  # Disabled - depends on students
+        # create_sample_fees()  # Disabled - depends on students
         
         frappe.db.commit()
         print("Bootstrap patch executed successfully")
@@ -55,45 +56,11 @@ def create_school_settings():
 
 
 def create_academic_years():
-    """Create academic years and terms."""
-    # Current academic year
-    current_year = frappe.get_doc({
-        "doctype": "Academic Year",
-        "name": "2024-2025",
-        "year_start_date": "2024-09-01",
-        "year_end_date": "2025-06-30",
-        "is_default": 1,
-        "enabled": 1
-    })
-    current_year.insert(ignore_permissions=True)
-    
-    # Previous academic year
-    prev_year = frappe.get_doc({
-        "doctype": "Academic Year",
-        "name": "2023-2024",
-        "year_start_date": "2023-09-01",
-        "year_end_date": "2024-06-30",
-        "is_default": 0,
-        "enabled": 1
-    })
-    prev_year.insert(ignore_permissions=True)
-    
-    # Create academic terms for current year
-    terms = [
-        {"name": "Trimestre 1", "start": "2024-09-01", "end": "2024-12-20"},
-        {"name": "Trimestre 2", "start": "2025-01-08", "end": "2025-03-28"},
-        {"name": "Trimestre 3", "start": "2025-04-07", "end": "2025-06-30"}
-    ]
-    
-    for term_data in terms:
-        term = frappe.get_doc({
-            "doctype": "Academic Term",
-            "academic_year": "2024-2025",
-            "term_name": term_data["name"],
-            "term_start_date": term_data["start"],
-            "term_end_date": term_data["end"]
-        })
-        term.insert(ignore_permissions=True)
+    """Create academic years and terms - DISABLED for Frappe v15."""
+    # Academic Year DocType moved to Education app in Frappe v15
+    # This function is disabled to prevent import errors
+    print("Academic Year creation skipped - DocType moved to Education app in v15")
+    return
 
 
 def create_programs_and_subjects():
@@ -149,22 +116,8 @@ def create_fee_structures():
                 "description": f"Frais pour {fee_data['name']}"
             })
             fee_type.insert(ignore_permissions=True)
-    
-    # Create fee structure
-    if not frappe.db.exists("Fee Structure", "Structure Standard 2024-2025"):
-        fee_structure = frappe.get_doc({
-            "doctype": "Fee Structure",
-            "fee_structure_name": "Structure Standard 2024-2025",
-            "academic_year": "2024-2025",
-            "program": "Primaire",
-            "fee_components": [
-                {"fee_type": "Frais de Scolarité", "amount": 5000},
-                {"fee_type": "Frais d'Inscription", "amount": 1000},
-                {"fee_type": "Frais de Transport", "amount": 800},
-                {"fee_type": "Frais de Cantine", "amount": 600}
-            ]
-        })
-        fee_structure.insert(ignore_permissions=True)
+            # Fee structure creation disabled - depends on Academic Year
+            print("Fee structure creation skipped - depends on Academic Year DocType")
 
 
 def create_salary_structures():
