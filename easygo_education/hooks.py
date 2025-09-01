@@ -106,49 +106,49 @@ after_install = "easygo_education.patches.v1_bootstrap.execute"
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-    "Student": {
-        "validate": "easygo_education.scolarite.doctype.student.student.validate_student",
-        "after_insert": "easygo_education.scolarite.doctype.student.student.send_welcome_email",
-    },
-    "Student Attendance": {
-        "after_insert": "easygo_education.vie_scolaire.doctype.student_attendance.student_attendance.notify_guardian",
-    },
-    "Course Schedule": {
-        "validate": "easygo_education.scolarite.doctype.course_schedule.course_schedule.validate_schedule",
-    },
-    "Fee Bill": {
-        "before_submit": "easygo_education.finances_rh.doctype.fee_bill.fee_bill.freeze_totals",
-        "on_submit": "easygo_education.finances_rh.doctype.fee_bill.fee_bill.create_ledger_entry",
-    },
-    "Payment Entry": {
-        "on_submit": "easygo_education.finances_rh.doctype.payment_entry.payment_entry.allocate_to_bills",
-    },
-    "Leave Application": {
-        "validate": "easygo_education.finances_rh.doctype.leave_application.leave_application.validate_leave",
-    },
-}
+# doc_events = {
+#     "Student": {
+#         "validate": "easygo_education.scolarite.doctype.student.student.validate_student",
+#         "after_insert": "easygo_education.scolarite.doctype.student.student.send_welcome_email",
+#     },
+#     "Student Attendance": {
+#         "after_insert": "easygo_education.vie_scolaire.doctype.student_attendance.student_attendance.notify_guardian",
+#     },
+#     "Course Schedule": {
+#         "validate": "easygo_education.scolarite.doctype.course_schedule.course_schedule.validate_schedule",
+#     },
+#     "Fee Bill": {
+#         "before_submit": "easygo_education.finances_rh.doctype.fee_bill.fee_bill.freeze_totals",
+#         "on_submit": "easygo_education.finances_rh.doctype.fee_bill.fee_bill.create_ledger_entry",
+#     },
+#     "Payment Entry": {
+#         "on_submit": "easygo_education.finances_rh.doctype.payment_entry.payment_entry.allocate_to_bills",
+#     },
+#     "Leave Application": {
+#         "validate": "easygo_education.finances_rh.doctype.leave_application.leave_application.validate_leave",
+#     },
+# }
 
 # Scheduled Tasks
 # ---------------
 
-scheduler_events = {
-    "daily": [
-        "easygo_education.jobs.daily.check_overdue_fees",
-        "easygo_education.jobs.daily.maintenance_reminders",
-        "easygo_education.jobs.daily.attendance_anomalies",
-    ],
-    "weekly": [
-        "easygo_education.jobs.weekly.attendance_summaries",
-        "easygo_education.jobs.weekly.teacher_load_analysis",
-        "easygo_education.jobs.weekly.budget_burn_rate",
-    ],
-    "monthly": [
-        "easygo_education.jobs.monthly.massar_exports",
-        "easygo_education.jobs.monthly.payroll_checks",
-        "easygo_education.jobs.monthly.asset_rollup",
-    ],
-}
+# scheduler_events = {
+#     "daily": [
+#         "easygo_education.jobs.daily.check_overdue_fees",
+#         "easygo_education.jobs.daily.maintenance_reminders",
+#         "easygo_education.jobs.daily.attendance_anomalies",
+#     ],
+#     "weekly": [
+#         "easygo_education.jobs.weekly.attendance_summaries",
+#         "easygo_education.jobs.weekly.teacher_load_analysis",
+#         "easygo_education.jobs.weekly.budget_burn_rate",
+#     ],
+#     "monthly": [
+#         "easygo_education.jobs.monthly.massar_exports",
+#         "easygo_education.jobs.monthly.payroll_checks",
+#         "easygo_education.jobs.monthly.asset_rollup",
+#     ],
+# }
 
 # Testing
 # -------
@@ -277,19 +277,19 @@ portal_menu_items = [
 ]
 
 # Whitelisted API endpoints
-whitelist_for_web = [
-    "easygo_education.api.portal.get_portal_home",
-    "easygo_education.api.portal.get_timetable",
-    "easygo_education.api.portal.get_attendance",
-    "easygo_education.api.portal.submit_attendance_justification",
-    "easygo_education.api.portal.list_homework",
-    "easygo_education.api.portal.submit_homework",
-    "easygo_education.api.portal.list_assessments",
-    "easygo_education.api.portal.submit_grades",
-    "easygo_education.api.portal.list_fee_bills",
-    "easygo_education.api.portal.initiate_payment",
-    "easygo_education.api.portal.list_messages",
-    "easygo_education.api.portal.post_message",
-    "easygo_education.api.portal.book_meeting",
-    "easygo_education.api.portal.confirm_meeting",
-]
+# whitelist_for_web = [
+#     "easygo_education.api.portal.get_portal_home",
+#     "easygo_education.api.portal.get_timetable",
+#     "easygo_education.api.portal.get_attendance",
+#     "easygo_education.api.portal.submit_attendance_justification",
+#     "easygo_education.api.portal.list_homework",
+#     "easygo_education.api.portal.submit_homework",
+#     "easygo_education.api.portal.list_assessments",
+#     "easygo_education.api.portal.submit_grades",
+#     "easygo_education.api.portal.list_fee_bills",
+#     "easygo_education.api.portal.initiate_payment",
+#     "easygo_education.api.portal.list_messages",
+#     "easygo_education.api.portal.post_message",
+#     "easygo_education.api.portal.book_meeting",
+#     "easygo_education.api.portal.confirm_meeting",
+# ]
